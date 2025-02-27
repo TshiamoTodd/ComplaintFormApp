@@ -5,11 +5,38 @@ import { SafeAreaView } from 'react-native-safe-area-context'
 import Navbar from '@/components/Navbar'
 import Entypo from '@expo/vector-icons/Entypo'
 import Divider from '@/components/Divider'
-import DateTimePicker from '@react-native-community/datetimepicker';
+import DateTimePicker, { DateTimePickerAndroid } from '@react-native-community/datetimepicker'
+import AntDesign from '@expo/vector-icons/AntDesign'
+import Ionicons from '@expo/vector-icons/Ionicons'
+import Checkbox from 'expo-checkbox'
 
 const complaintForm = () => {
     const [isVisible, setIsVisible] = useState(false)
     const [selectedIndex, setSelectedIndex] = useState(0)
+    const [date, setDate] = useState(new Date(1598051730000))
+    const [isChecked, setChecked] = useState(false)
+
+    const onChange = (event: any, selectedDate: any) => {
+        const currentDate = selectedDate;
+        setDate(currentDate);
+    };
+
+    const showMode = (currentMode: any) => {
+        DateTimePickerAndroid.open({
+          value: date,
+          onChange,
+          mode: currentMode,
+          is24Hour: true,
+        });
+      };
+    
+      const showDatepicker = () => {
+        showMode('date');
+      };
+    
+      const showTimepicker = () => {
+        showMode('time');
+      };    
 
     
 
@@ -178,17 +205,50 @@ const complaintForm = () => {
                                 Date of incident
                             </Text>
                             <Text className='text-sm font-thin'>
-                                (if known) 
+                                Please select a date
                             </Text>
                         </View>
-                        <TextInput
-                            className='p-2 border border-gray-300 rounded-lg'
-                            placeholder='Jane Doe'
-                            placeholderTextColor={'lightgray'}
-                        />
+                        <View className='w-full flex flex-row item-center gap-2'>
+                            <TouchableOpacity
+                                onPress={showDatepicker}
+                                className='p-2 border border-gray-300 rounded-lg'
+                            >
+                                <AntDesign name="calendar" size={24} color="black" />
+                            </TouchableOpacity>
+                            <TextInput
+                                value={date.toDateString()}
+                                className='p-2 border border-gray-300 rounded-lg w-[80%]'
+                                placeholder={date.toDateString()}
+                                placeholderTextColor={'lightgray'}
+                            />
+                        </View>
                     </View>
 
                     {/* Time Picker */}
+                    <View className='w-full flex gap-2 p-2'>
+                        <View className='w-full'>
+                            <Text className='font-semibold text-lg'>
+                                Time of incident
+                            </Text>
+                            <Text className='text-sm font-thin'>
+                                Please select a time
+                            </Text>
+                        </View>
+                        <View className='w-full flex flex-row item-center gap-2'>
+                            <TouchableOpacity
+                                onPress={showTimepicker}
+                                className='p-2 border border-gray-300 rounded-lg'
+                            >
+                                <Ionicons name="time-outline" size={24} color="black" />
+                            </TouchableOpacity>
+                            <TextInput
+                                value={date.toDateString()}
+                                className='p-2 border border-gray-300 rounded-lg w-[80%]'
+                                placeholder={date.toDateString()}
+                                placeholderTextColor={'lightgray'}
+                            />
+                        </View>
+                    </View>
 
                     <View className='w-full flex gap-2 p-2'>
                         <View className='w-full'>
@@ -207,8 +267,50 @@ const complaintForm = () => {
                     </View>
 
                     {/* Radio Button */}
+                    <View className='w-full flex gap-2 p-2'>
+                        <View className='w-full'>
+                            <Text className='font-semibold text-lg'>
+                                Follow-up request
+                            </Text>
+                            <Text className='text-sm font-thin'>
+                                Would you like us to follow up with you regarding this feedback?
+                            </Text>
+                        </View>
+                        <SegmentedControl
+                            values={['Yes', 'No']}
+                            selectedIndex={selectedIndex}
+                            onChange={(event) => {
+                                setSelectedIndex(event.nativeEvent.selectedSegmentIndex);
+                            }}
+                        />
+                    </View>
 
                     {/* CheckBox */}
+                    <View className='w-full flex gap-2 p-2'>
+                        <View className='w-full'>
+                            <Text className='font-semibold text-lg'>
+                                Final confirmation
+                            </Text>
+                            <Text className='text-sm font-thin'>
+                                I confirm that the information provided is accurate to the best of my knowledge
+                            </Text>
+                        </View>
+                        <View className='w-full flex flex-row item-center gap-2'>
+                            <Checkbox
+                                className='ml-2'
+                                value={isChecked}
+                                onValueChange={setChecked}
+                                color={isChecked ? '#4630EB' : undefined}
+                            />
+                            <Text>Confirm</Text>
+                        </View>
+                    </View>
+                    
+                    <View className='w-full flex gap-2 p-2'>
+                        <TouchableOpacity className='w-full bg-purple-500 py-4 px-4 rounded-xl items-center'>
+                            <Text className='text-white font-normal text-lg'>Submit</Text>
+                        </TouchableOpacity>
+                    </View>
 
                     <View className='w-full items-center justify-center px-5 mt-5 mb-5'>
                             <Divider/>
