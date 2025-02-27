@@ -14,20 +14,36 @@ const complaintForm = () => {
     const [isVisible, setIsVisible] = useState(false)
     const [selectedIndex, setSelectedIndex] = useState(0)
     const [date, setDate] = useState(new Date(1598051730000))
+    const [time, setTime] = useState(new Date(1598051730000))
     const [isChecked, setChecked] = useState(false)
 
-    const onChange = (event: any, selectedDate: any) => {
+    const onDateChange = (event: any, selectedDate: any) => {
         const currentDate = selectedDate;
         setDate(currentDate);
     };
 
+    const onTimeChange = (event: any, selectedTime: any) => {
+        console.log({selectedTime})
+        const currentTime = selectedTime;
+        setTime(currentTime);
+    };
+
     const showMode = (currentMode: any) => {
-        DateTimePickerAndroid.open({
-          value: date,
-          onChange,
-          mode: currentMode,
-          is24Hour: true,
-        });
+        if(currentMode === 'date') {
+            DateTimePickerAndroid.open({
+              value: date,
+              onChange: onDateChange,
+              mode: currentMode,
+              is24Hour: true,
+            });
+        } else if(currentMode === 'time') {
+            DateTimePickerAndroid.open({
+              value: time,
+              onChange: onTimeChange,
+              mode: currentMode,
+              is24Hour: true,
+            });
+        }
       };
     
       const showDatepicker = () => {
@@ -242,7 +258,7 @@ const complaintForm = () => {
                                 <Ionicons name="time-outline" size={24} color="black" />
                             </TouchableOpacity>
                             <TextInput
-                                value={date.toDateString()}
+                                value={time.toDateString()}
                                 className='p-2 border border-gray-300 rounded-lg w-[80%]'
                                 placeholder={date.toDateString()}
                                 placeholderTextColor={'lightgray'}
