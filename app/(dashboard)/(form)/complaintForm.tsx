@@ -83,7 +83,7 @@ const complaintForm = () => {
               is24Hour: true,
             });
         }
-      };
+    };
     
     const showDatepicker = () => {
     showMode('date');
@@ -105,6 +105,7 @@ const complaintForm = () => {
             pathname: '/confirmationScreen',
             params: { data: JSON.stringify(data) }
         })
+        reset();
     };
 
     const onChange = (arg: any) => {
