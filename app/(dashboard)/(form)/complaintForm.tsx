@@ -1,4 +1,4 @@
-import { View, Text, TouchableOpacity, FlatList, ScrollView, TextInput } from 'react-native'
+import { View, Text, TouchableOpacity, FlatList, ScrollView, TextInput, Alert } from 'react-native'
 import SegmentedControl from '@react-native-segmented-control/segmented-control'
 import React, { useState } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
@@ -94,7 +94,10 @@ const complaintForm = () => {
     };    
 
     const onSubmit = (data: FormData) => {
-        console.log(data.dateOfIncident);
+        if(errors) {
+            Alert.alert('Error', 'Please fill in all required fields')
+            return
+        }
 
         router.push({
             pathname: '/confirmationScreen',
