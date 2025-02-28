@@ -6,6 +6,7 @@ const FormLayout = () => {
   return (
     <Stack>
       <Stack.Screen name='complaintForm' options={{ headerShown: false }}/>
+      <Stack.Screen name='confirmationScreen' options={{ headerShown: false }}/>
     </Stack>
   )
 }

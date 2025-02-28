@@ -9,23 +9,62 @@ import DateTimePicker, { DateTimePickerAndroid } from '@react-native-community/d
 import AntDesign from '@expo/vector-icons/AntDesign'
 import Ionicons from '@expo/vector-icons/Ionicons'
 import Checkbox from 'expo-checkbox'
+import { Controller, useForm } from 'react-hook-form'
+import { router } from 'expo-router'
+
+export interface FormData {
+    fullName: string;
+    contactNumber: string;
+    email: string;
+    incidentDescription: string;
+    typeOfFeedback: string;
+    busNumber: string;
+    route: string;
+    driverName: string;
+    dateOfIncident: string;  // String format (YYYY-MM-DD or formatted)
+    timeOfIncident: string;  // HH:MM formatted string
+    locationOfIncident: string;
+    followUpRequest: string;
+    finalConfirmation: string;
+}
 
 const complaintForm = () => {
+    const { register, setValue, handleSubmit, control, reset, formState: { errors } } = useForm({
+        defaultValues: {
+            fullName: '',
+            contactNumber: '',
+            email: '',
+            incidentDescription: '',
+            typeOfFeedback: '',
+            busNumber: '',
+            route: '',
+            driverName: '',
+            dateOfIncident: '',
+            timeOfIncident: '',
+            locationOfIncident: '',
+            followUpRequest: '',
+            finalConfirmation: ''
+        }
+    });
+    
     const [isVisible, setIsVisible] = useState(false)
     const [selectedIndex, setSelectedIndex] = useState(0)
-    const [date, setDate] = useState(new Date(1598051730000))
-    const [time, setTime] = useState(new Date(1598051730000))
+    const [date, setDate] = useState(new Date(new Date().toDateString()))
+    const [time, setTime] = useState(new Date(new Date().toDateString()))
     const [isChecked, setChecked] = useState(false)
 
     const onDateChange = (event: any, selectedDate: any) => {
-        const currentDate = selectedDate;
-        setDate(currentDate);
+        if (selectedDate) {
+            const formattedDate = selectedDate.toDateString(); // Format date
+            setValue("dateOfIncident", formattedDate); // Update the form field
+        }
     };
 
     const onTimeChange = (event: any, selectedTime: any) => {
-        console.log({selectedTime})
-        const currentTime = selectedTime;
-        setTime(currentTime);
+        if (selectedTime) {
+            const formattedTime = selectedTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false }); // Format time
+            setValue("timeOfIncident", formattedTime); // Update the form field
+        }
     };
 
     const showMode = (currentMode: any) => {
@@ -46,15 +85,30 @@ const complaintForm = () => {
         }
       };
     
-      const showDatepicker = () => {
-        showMode('date');
-      };
-    
-      const showTimepicker = () => {
-        showMode('time');
-      };    
+    const showDatepicker = () => {
+    showMode('date');
+    };
 
-    
+    const showTimepicker = () => {
+    showMode('time');
+    };    
+
+    const onSubmit = (data: FormData) => {
+        console.log(data.dateOfIncident);
+
+        router.push({
+            pathname: '/confirmationScreen',
+            params: { data: JSON.stringify(data) }
+        })
+    };
+
+    const onChange = (arg: any) => {
+        return {
+            value: arg.nativeEvent.text,
+        };
+    };
+
+    console.log('errors', errors);
 
     return (
         <SafeAreaView className='flex-1'>
@@ -87,33 +141,66 @@ const complaintForm = () => {
                         <Text className='font-semibold text-lg'>
                             Fullname
                         </Text>
-                        <TextInput
-                            className='p-2 border border-gray-300 rounded-lg'
-                            placeholder='Jane Doe'
-                            placeholderTextColor={'lightgray'}
+                        <Controller
+                            control={control}
+                            render={({ field: { onChange, onBlur, value } }) => (
+                                <TextInput
+                                    className='p-2 border border-gray-300 rounded-lg'
+                                    placeholder='Jane Doe'
+                                    placeholderTextColor={'lightgray'}
+                                    onBlur={onBlur}
+                                    onChangeText={value => onChange(value)}
+                                    value={value}
+                                />
+                            )}
+                            name="fullName"
+                            rules={{ required: true }}
                         />
+                        {errors.fullName && <Text className='text-sm text-red-500'>This is required.</Text>}
                     </View>
                     
                     <View className='w-full flex gap-2 p-2'>
                         <Text className='font-semibold text-lg'>
                             Contact number
                         </Text>
-                        <TextInput
-                            className='p-2 border border-gray-300 rounded-lg'
-                            placeholder='0123456789'
-                            placeholderTextColor={'lightgray'}
+                        <Controller
+                            control={control}
+                            render={({ field: { onChange, onBlur, value } }) => (
+                                <TextInput
+                                    className='p-2 border border-gray-300 rounded-lg'
+                                    placeholder='0123456789'
+                                    placeholderTextColor={'lightgray'}
+                                    onBlur={onBlur}
+                                    onChangeText={value => onChange(value)}
+                                    value={value}
+                                />
+                            )}
+                            name="contactNumber"
+                            rules={{ required: true }}
                         />
+                        {errors.contactNumber && <Text className='text-sm text-red-500'>This is required.</Text>}
                     </View>
 
                     <View className='w-full flex gap-2 p-2'>
                         <Text className='font-semibold text-lg'>
                             Email
                         </Text>
-                        <TextInput
-                            className='p-2 border border-gray-300 rounded-lg'
-                            placeholder='your-email@mail.com'
-                            placeholderTextColor={'lightgray'}
+                        <Controller
+                            control={control}
+                            render={({ field: { onChange, onBlur, value } }) => (
+                                <TextInput
+                                    className='p-2 border border-gray-300 rounded-lg'
+                                    placeholder='your-email@mail.com'
+                                    placeholderTextColor={'lightgray'}
+                                    onBlur={onBlur}
+                                    onChangeText={value => onChange(value)}
+                                    value={value}
+                                />
+                            )}
+                            name="email"
+                            rules={{ required: true }}
                         />
+                        {errors.email && <Text className='text-sm text-red-500'>This is required.</Text>}
                     </View>
 
                     <View className='w-full flex gap-2 p-2'>
@@ -125,13 +212,23 @@ const complaintForm = () => {
                                 (select one, Reqiured)
                             </Text>
                         </View>
-                        <SegmentedControl
-                            values={['Complaint', 'Suggestion']}
-                            selectedIndex={selectedIndex}
-                            onChange={(event) => {
-                                setSelectedIndex(event.nativeEvent.selectedSegmentIndex);
-                            }}
+                        <Controller
+                            control={control}
+                            render={({ field: { onChange, onBlur, value } }) => (
+                                <SegmentedControl
+                                    values={['Complaint', 'Suggestion']}
+                                    selectedIndex={["Complaint", "Suggestion"].indexOf(value)}
+                                    onChange={(event) => {
+                                        const selectedValue = ["Complaint", "Suggestion"][event.nativeEvent.selectedSegmentIndex];
+                                        onChange(selectedValue); // Update form state
+                                    }}
+                                    onValueChange={value => onChange(value)} // Update form state
+                                />
+                            )}
+                            name="typeOfFeedback"
+                            rules={{ required: true }}
                         />
+                        {errors.typeOfFeedback && <Text className='text-sm text-red-500'>This is required.</Text>}
                     </View>
 
                     <View className='w-full flex gap-2 p-2'>
@@ -141,15 +238,27 @@ const complaintForm = () => {
                         <Text className='text-sm font-thin'>
                             (Provide as much information as possible)
                         </Text>
-                        <TextInput
-                            className='p-2 border border-gray-300 rounded-lg'
-                            multiline={true}
-                            numberOfLines={10}
-                            style={{ 
-                                height: 100,
-                                textAlignVertical: 'top'
-                            }}
+
+                        <Controller
+                            control={control}
+                            render={({ field: { onChange, onBlur, value } }) => (
+                                <TextInput
+                                    className='p-2 border border-gray-300 rounded-lg'
+                                    multiline={true}
+                                    numberOfLines={10}
+                                    style={{ 
+                                        height: 100,
+                                        textAlignVertical: 'top'
+                                    }}
+                                    onBlur={onBlur}
+                                    onChangeText={value => onChange(value)}
+                                    value={value}
+                                />
+                            )}
+                            name="incidentDescription"
+                            rules={{ required: true }}
                         />
+                        {errors.incidentDescription && <Text className='text-sm text-red-500'>This is required.</Text>}
                     </View>
 
                     <View className='w-full flex p-2 mt-5'>
@@ -175,10 +284,20 @@ const complaintForm = () => {
                                 (if known) 
                             </Text>
                         </View>
-                        <TextInput
-                            className='p-2 border border-gray-300 rounded-lg'
-                            placeholder='AN1200'
-                            placeholderTextColor={'lightgray'}
+                        <Controller
+                            control={control}
+                            render={({ field: { onChange, onBlur, value } }) => (
+                                <TextInput
+                                    className='p-2 border border-gray-300 rounded-lg'
+                                    placeholder='AN1200'
+                                    placeholderTextColor={'lightgray'}
+                                    onBlur={onBlur}
+                                    onChangeText={value => onChange(value)}
+                                    value={value}
+                                />
+                            )}
+                            name="busNumber"
+                            rules={{ required: false }}
                         />
                     </View>
 
@@ -191,10 +310,20 @@ const complaintForm = () => {
                                 (if known)
                             </Text>
                         </View>
-                        <TextInput
-                            className='p-2 border border-gray-300 rounded-lg'
-                            placeholder='A7'
-                            placeholderTextColor={'lightgray'}
+                        <Controller
+                            control={control}
+                            render={({ field: { onChange, onBlur, value } }) => (
+                                <TextInput
+                                    className='p-2 border border-gray-300 rounded-lg'
+                                    placeholder='A7'
+                                    placeholderTextColor={'lightgray'}
+                                    onBlur={onBlur}
+                                    onChangeText={value => onChange(value)}
+                                    value={value}
+                                />
+                            )}
+                            name="route"
+                            rules={{ required: false }}
                         />
                     </View>
 
@@ -207,16 +336,26 @@ const complaintForm = () => {
                                 (if known) 
                             </Text>
                         </View>
-                        <TextInput
-                            className='p-2 border border-gray-300 rounded-lg'
-                            placeholder='Jane Doe'
-                            placeholderTextColor={'lightgray'}
+                        <Controller
+                            control={control}
+                            render={({ field: { onChange, onBlur, value } }) => (
+                                <TextInput
+                                    className='p-2 border border-gray-300 rounded-lg'
+                                    placeholder='Jane Doe'
+                                    placeholderTextColor={'lightgray'}
+                                    onBlur={onBlur}
+                                    onChangeText={value => onChange(value)}
+                                    value={value}
+                                />
+                            )}
+                            name="driverName"
+                            rules={{ required: false }}
                         />
                     </View>
 
                     {/* DatePicker */}
                     <View className='w-full flex gap-2 p-2'>
-                        <View className='w-full'>
+                        <View className='w-full mb-2'>
                             <Text className='font-semibold text-lg'>
                                 Date of incident
                             </Text>
@@ -224,20 +363,32 @@ const complaintForm = () => {
                                 Please select a date
                             </Text>
                         </View>
-                        <View className='w-full flex flex-row item-center gap-2'>
-                            <TouchableOpacity
-                                onPress={showDatepicker}
-                                className='p-2 border border-gray-300 rounded-lg'
-                            >
-                                <AntDesign name="calendar" size={24} color="black" />
-                            </TouchableOpacity>
-                            <TextInput
-                                value={date.toDateString()}
-                                className='p-2 border border-gray-300 rounded-lg w-[80%]'
-                                placeholder={date.toDateString()}
-                                placeholderTextColor={'lightgray'}
+                            <Controller
+                                control={control}
+                                render={({ field: { onChange, onBlur, value } }) => (
+                                    <>
+                                        <View className='w-full flex flex-row item-center gap-2'>
+                                            <TouchableOpacity
+                                                onPress={showDatepicker}
+                                                className='p-2 border border-gray-300 rounded-lg'
+                                            >
+                                                <AntDesign name="calendar" size={24} color="black" />
+                                            </TouchableOpacity>
+                                            <TextInput
+                                                className='p-2 border border-gray-300 rounded-lg w-[80%]'
+                                                placeholder={date.toDateString()}
+                                                placeholderTextColor={'lightgray'}
+                                                onBlur={onBlur}
+                                                onChangeText={value => onChange(value)}
+                                                value={value}
+                                            />
+                                        </View>
+                                    </>
+                                )}
+
+                                name="dateOfIncident"
+                                rules={{ required: false }}
                             />
-                        </View>
                     </View>
 
                     {/* Time Picker */}
@@ -250,20 +401,31 @@ const complaintForm = () => {
                                 Please select a time
                             </Text>
                         </View>
-                        <View className='w-full flex flex-row item-center gap-2'>
-                            <TouchableOpacity
-                                onPress={showTimepicker}
-                                className='p-2 border border-gray-300 rounded-lg'
-                            >
-                                <Ionicons name="time-outline" size={24} color="black" />
-                            </TouchableOpacity>
-                            <TextInput
-                                value={time.toDateString()}
-                                className='p-2 border border-gray-300 rounded-lg w-[80%]'
-                                placeholder={date.toDateString()}
-                                placeholderTextColor={'lightgray'}
-                            />
-                        </View>
+                        <Controller
+                            control={control}
+                            render={({ field: { onChange, onBlur, value } }) => (
+                                <>
+                                    <View className='w-full flex flex-row item-center gap-2'>
+                                        <TouchableOpacity
+                                            onPress={showTimepicker}
+                                            className='p-2 border border-gray-300 rounded-lg'
+                                        >
+                                            <Ionicons name="time-outline" size={24} color="black" />
+                                        </TouchableOpacity>
+                                        <TextInput
+                                            className='p-2 border border-gray-300 rounded-lg w-[80%]'
+                                            placeholder={time.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false })}
+                                            placeholderTextColor={'lightgray'}
+                                            onBlur={onBlur}
+                                            onChangeText={value => onChange(value)}
+                                            value={value}
+                                        />
+                                    </View>
+                                </>
+                            )}
+                            name="timeOfIncident"
+                            rules={{ required: false }}
+                        />
                     </View>
 
                     <View className='w-full flex gap-2 p-2'>
@@ -275,10 +437,20 @@ const complaintForm = () => {
                                 (e.g. specific stop, station or area)
                             </Text>
                         </View>
-                        <TextInput
-                            className='p-2 border border-gray-300 rounded-lg'
-                            placeholder='Jane Doe'
-                            placeholderTextColor={'lightgray'}
+                        <Controller
+                            control={control}
+                            render={({ field: { onChange, onBlur, value } }) => (
+                                <TextInput
+                                    className='p-2 border border-gray-300 rounded-lg'
+                                    placeholder='Bus stop'
+                                    placeholderTextColor={'lightgray'}
+                                    onBlur={onBlur}
+                                    onChangeText={value => onChange(value)}
+                                    value={value}
+                                />
+                            )}
+                            name="locationOfIncident"
+                            rules={{ required: false }}
                         />
                     </View>
 
@@ -292,13 +464,24 @@ const complaintForm = () => {
                                 Would you like us to follow up with you regarding this feedback?
                             </Text>
                         </View>
-                        <SegmentedControl
-                            values={['Yes', 'No']}
-                            selectedIndex={selectedIndex}
-                            onChange={(event) => {
-                                setSelectedIndex(event.nativeEvent.selectedSegmentIndex);
-                            }}
+                        <Controller
+                            control={control}
+                            render={({ field: { onChange, onBlur, value } }) => (
+                                <SegmentedControl
+                                    className='p-2 my-3'
+                                    values={['Yes', 'No']}
+                                    selectedIndex={["Yes", "No"].indexOf(value)}
+                                    onChange={(event) => {
+                                        const selectedValue = ["Complaint", "Suggestion"][event.nativeEvent.selectedSegmentIndex];
+                                        onChange(selectedValue); // Update form state
+                                    }}
+                                    onValueChange={value => onChange(value)}
+                                />
+                            )}
+                            name="followUpRequest"
+                            rules={{ required: true }}
                         />
+                        {errors.followUpRequest && <Text className='text-sm text-red-500'>This is required.</Text>}
                     </View>
 
                     {/* CheckBox */}
@@ -311,19 +494,34 @@ const complaintForm = () => {
                                 I confirm that the information provided is accurate to the best of my knowledge
                             </Text>
                         </View>
-                        <View className='w-full flex flex-row item-center gap-2'>
-                            <Checkbox
-                                className='ml-2'
-                                value={isChecked}
-                                onValueChange={setChecked}
-                                color={isChecked ? '#4630EB' : undefined}
-                            />
-                            <Text>Confirm</Text>
-                        </View>
+                        <Controller
+                        
+                            control={control}
+                            render={({ field: { onChange, onBlur, value } }) => (
+                                <View className='w-full flex flex-row item-center gap-2 p-3'>
+                                    <Checkbox
+                                        className='ml-2'
+                                        value={isChecked}
+                                        onValueChange={() => {
+                                            onChange(!value)
+                                            setChecked(!value)}
+                                        }
+                                        color={isChecked ? '#4630EB' : undefined}
+                                    />
+                                    <Text>Confirm</Text>
+                                </View>
+                            )}
+                            name="finalConfirmation"
+                            rules={{ required: true }}
+                        />
+                        {errors.finalConfirmation && <Text className='text-sm text-red-500'>This is required.</Text>}
                     </View>
                     
                     <View className='w-full flex gap-2 p-2'>
-                        <TouchableOpacity className='w-full bg-purple-500 py-4 px-4 rounded-xl items-center'>
+                        <TouchableOpacity 
+                            onPress={handleSubmit(onSubmit)}
+                            className='w-full bg-purple-500 py-4 px-4 rounded-xl items-center'
+                        >
                             <Text className='text-white font-normal text-lg'>Submit</Text>
                         </TouchableOpacity>
                     </View>
