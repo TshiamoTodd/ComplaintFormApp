@@ -94,10 +94,12 @@ const complaintForm = () => {
     };    
 
     const onSubmit = (data: FormData) => {
-        if(errors) {
+        if(errors.fullName || errors.contactNumber || errors.email || errors.incidentDescription || errors.typeOfFeedback || errors.followUpRequest || errors.finalConfirmation) {
             Alert.alert('Error', 'Please fill in all required fields')
             return
         }
+        
+        console.log(errors.fullName)
 
         router.push({
             pathname: '/confirmationScreen',
@@ -111,7 +113,7 @@ const complaintForm = () => {
         };
     };
 
-    console.log('errors', errors);
+    // console.log('errors', errors);
 
     return (
         <SafeAreaView className='flex-1'>
